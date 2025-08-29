@@ -34,8 +34,9 @@ def upgrade() -> None:
         "books",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("title", sa.String(), nullable=False),
-        sa.Column("published_date", sa.Date(), nullable=True),
-        sa.Column("author_id", sa.Integer(), nullable=True),
+        sa.Column("publication_date", sa.Date(), nullable=False),
+        sa.Column("summary", sa.String(), nullable=False),
+        sa.Column("author_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(["author_id"], ["authors.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
