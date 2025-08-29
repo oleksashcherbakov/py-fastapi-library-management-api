@@ -92,3 +92,6 @@ def update_author(
         db.refresh(author_to_update)
         return author_to_update
     return None
+
+def get_books_by_author(db: Session, author_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Book).filter(models.Book.author_id == author_id).offset(skip).limit(limit).all()

@@ -20,7 +20,7 @@ class AuthorCreate(AuthorBase):
 
 
 class BookCreate(BookBase):
-    author_id: int
+    pass
 
 
 class Book(BookBase):

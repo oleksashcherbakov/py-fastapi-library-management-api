@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 import crud
 import schemas
-from db import engine, models
 from db.database import SessionLocal
 
 
@@ -61,17 +60,31 @@ def create_book_for_author(
 
 
 @app.get("/books/", response_model=List[schemas.Book])
-def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    books = crud.get_books(db, skip=skip, limit=limit)
+def read_books(
+    skip: int = 0,
+    limit: int = 100,
+    author_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db)
+):
+    if author_id:
+        books = crud.get_books_by_author(db=db, author_id=author_id, skip=skip, limit=limit)
+    else:
+        books = crud.get_books(db=db, skip=skip, limit=limit)
     return books
 
 
 @app.get("/authors/{author_id}/books/", response_model=List[schemas.Book])
 def read_books_by_author(
-    author_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    author_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
 ):
+    """
+    Получает все книги определенного автора.
+    """
     author = crud.get_author(db, author_id=author_id)
-    if author is None:
+    if not author:
         raise HTTPException(status_code=404, detail="Author not found")
-    books = author.books[skip : skip + limit]
+    books = crud.get_books_by_author(db=db, author_id=author_id, skip=skip, limit=limit)
     return books
